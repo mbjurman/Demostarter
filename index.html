@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	
+	<title>Demostarter</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	
+	<link rel="shortcut icon" href="/favicon.ico">
+	
+	<style type="text/css">
+		body {
+			padding-top: 60px;
+			padding-bottom: 40px;
+			color: #066EB0;
+			background-color: #90C0DE;
+			font-family: Arial; 
+			font-size: 120px; 
+			line-height: 120px; 
+			font-weight: bold;
+			text-align: center;
+		}
+	</style>
+
+	<script type="text/javascript">
+		RemainingTime = 120;
+
+		window.setTimeout("Tick()", 1000);
+        
+        function LeadingZero(Time) 
+        {
+	        return (Time < 10) ? "0" + Time : + Time;
+		}
+
+		function UpdateTimer(TotalSeconds) 
+		{
+        	var Seconds = TotalSeconds;
+        
+	        var Minutes = Math.floor(Seconds / 60);
+	        Seconds -= Minutes * (60);
+
+	        var TimeStr = LeadingZero(Minutes) + ":" + LeadingZero(Seconds)
+
+        	var e = document.getElementById("timer");
+        	e.innerHTML = TimeStr;	
+		}
+
+        function Tick() 
+        {
+        	RemainingTime = RemainingTime - 1;
+        	if (RemainingTime < 0)
+        		RemainingTime = 0;
+        	UpdateTimer(RemainingTime);
+			window.setTimeout("Tick()", 1000);
+        }
+    </script>
+</head>
+
+<body>
+	<p>Demo startar om</p>
+	<p id="timer">02:00</p>
+</body>
+</html>

@@ -23,44 +23,48 @@
 			font-weight: bold;
 			text-align: center;
 		}
+
+		p {
+			margin-top: 60px;
+			margin-bottom: 60px;
+		}
 	</style>
 
 	<script type="text/javascript">
-		RemainingTime = 120;
 
-		window.setTimeout("Tick()", 1000);
-        
-        function LeadingZero(Time) 
-        {
-	        return (Time < 10) ? "0" + Time : + Time;
+		function formatSecondsAsTime(secs, format) {
+			var hr  = Math.floor(secs / 3600);
+			var min = Math.floor((secs - (hr * 3600))/60);
+			var sec = Math.floor(secs - (hr * 3600) -  (min * 60));
+
+			if (min < 10) { 
+				min = "0" + min; 
+			}
+			if (sec < 10) { 
+				sec  = "0" + sec;
+			}
+
+			return min + ':' + sec;
 		}
 
-		function UpdateTimer(TotalSeconds) 
-		{
-        	var Seconds = TotalSeconds;
-        
-	        var Minutes = Math.floor(Seconds / 60);
-	        Seconds -= Minutes * (60);
+		function updateTrackTime(track){
+			var currTimeDiv = document.getElementById('timer');
 
-	        var TimeStr = LeadingZero(Minutes) + ":" + LeadingZero(Seconds)
+			var currTime = Math.floor(track.currentTime).toString(); 
+			var duration = Math.floor(track.duration).toString();
 
-        	var e = document.getElementById("timer");
-        	e.innerHTML = TimeStr;	
+			currTimeDiv.innerHTML = formatSecondsAsTime(duration-currTime);
 		}
-
-        function Tick() 
-        {
-        	RemainingTime = RemainingTime - 1;
-        	if (RemainingTime < 0)
-        		RemainingTime = 0;
-        	UpdateTimer(RemainingTime);
-			window.setTimeout("Tick()", 1000);
-        }
     </script>
 </head>
 
 <body>
 	<p>Demo startar om</p>
-	<p id="timer">02:00</p>
+	<p id="timer"></p>
+
+	<audio id="audio-player" controls autoplay ontimeupdate="updateTrackTime(this);">
+		<source src="demo.mp3" type="audio/mpeg">
+		Your browser does not support the audio element.
+	</audio>
 </body>
 </html>

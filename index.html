@@ -11,28 +11,22 @@
 	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 	<script src="spectrum.js"></script>
-	<script src="remoteaudioplayer.js"></script>
 
 	<link rel="shortcut icon" href="/favicon.ico">
 	<link href='http://fonts.googleapis.com/css?family=Aldrich|Marvel' rel='stylesheet' type='text/css'>
 	
 	<style type="text/css">
 		body {
-			padding-top: 60px;
-			padding-bottom: 40px;
+			padding-top: 20px;
+			padding-bottom: 20px;
 			color: #066EB0;
 			background-color: #90C0DE;
 			font-family: Arial; 
-			font-size: 120px; 
-			line-height: 120px; 
+			font-size: 60px; 
+			line-height: 80px; 
 			font-weight: bold;
 			text-align: center;
-
-			background: white;
-			font-family: 'Marvel', sans-serif;
-			font-size: 18px;
-			color: black;
-			margin: auto 0px;
+			font-family: "Aldrich", cursive; 
 		}
 
 		p {
@@ -40,50 +34,29 @@
 			margin-bottom: 60px;
 		}
 
-		a { text-decoration: none; color: black; border-bottom: dotted #999999 1px }
-		a:link {text-decoration: none; color: black; }
-		a:visited {text-decoration: none; color: black; }
-		a:active {text-decoration: none; color: black; }
-		a:hover {text-decoration: none; color: black; border-bottom: dotted red 2px; }
-
-		#wrapper {
-			font-size: 18px;
-			margin-left: auto;
-			margin-right: auto;
-			margin-top: 50px;
-			display: block;
-			padding: 20px;
-			width: 90%;
+		#timer {
+			font-size: 100px;
 		}
 
-		h1 { font-family: "Aldrich", cursive; font-weight: bold; font-size: 36px;}
-
-		a#play {
-			font-family: "Aldrich", cursive;
-			font-size: 26px; padding: 10px;
-			background: #cccccc;
-			border-bottom: none;
-			color: black;
-		}
-		a#play:hover {text-decoration: none; color: black;
-		border-bottom: solid red 2px; }
-
-		p { padding: 10px; }
-
-		#fftbox, #wavebox {
-			position: absolute;
-			width: 500;
-			height: 100;
+		#wavebox {
+			position: relative;
+			width: 500px;
+			height: 100px;
 		}
 
 		#canvasbox {
 			position: relative;
-			width: 500px;
+			width: 100%;
 			height: 100px;
 		}		
 	</style>
 
 	<script type="text/javascript">
+
+		var context;
+		var wavebox;
+		var audio;
+
 
 		function formatSecondsAsTime(secs, format) {
 			var hr  = Math.floor(secs / 3600);
@@ -109,63 +82,36 @@
 			currTimeDiv.innerHTML = formatSecondsAsTime(duration-currTime);
 		}
 
-		var context;
-		var frequencybox;
-		var wavebox;
-		var audio;
-
 		function initialize() {
 			context = new webkitAudioContext();
 
-			// Setup frequency domain graph
-			frequencybox = new SpectrumBox(2048, 30, "fftbox", context);
-			frequencybox.setValidPoints(500);
-			frequencybox.getCanvasContext().fillStyle = "rgb(150, 150, 150)";
-
-			// Setup time domain graph
 			wavebox = new SpectrumBox(2048, 1000, "wavebox", context);
 			wavebox.setType(SpectrumBox.Types.TIME);
-			wavebox.getCanvasContext().fillStyle = "rgb(0, 0, 0)";
-
-			// Load MP3
-			audio = new RemoteAudioPlayer(context, "demo.mp3");
-			audio.load(function() {
-				$('#play').text("Play");
-				$('#play').click(play);
-			});
+			wavebox.getCanvasContext().fillStyle = "black";
 		}
 
 		function play() {
-			var source = audio.getSource();
+			var audio = document.getElementById('audio-player');
+			var audioSource = context.createMediaElementSource(audio);
+			audioSource.connect(context.destination);
+
 			var wavenode = wavebox.getAudioNode();
-			var frequencynode = frequencybox.getAudioNode();
-
-			// Route audio and graphs
-			source.connect(frequencynode);
-			frequencynode.connect(wavenode)
+			audioSource.connect(wavenode);
 			wavenode.connect(context.destination);
-
-			// Play audio
-			audio.reload();
-			source.noteOn(0);
-
-			// Enable graphs
 			wavebox.enable();
-			frequencybox.enable();
-
-			$('#play').text("Stop");
-			$('#play').click(stop);
 		}
 
 		function stop() {
-			// Disable graphs
 			wavebox.disable();
-			frequencybox.disable();
 			audio.getSource().disconnect();
-
-			$('#play').text("Play");
-			$('#play').click(play);
 		}
+
+		function onLoad(e) {
+			play();
+		}
+
+		// Need window.onload to fire first. See crbug.com/112368.
+		window.addEventListener('load', onLoad, false);	
 
 		$(function() { initialize(); });
 
@@ -176,22 +122,12 @@
 	<p>Demo startar om</p>
 	<p id="timer"></p>
 
-	<audio id="audio-player" controls autoplay ontimeupdate="updateTrackTime(this);">
-		<source src="demo.mp3" type="audio/mpeg">
+	<div id="canvasbox">
+		<canvas id="wavebox" width=500 height=200></canvas>
+	</div>
+
+	<audio id="audio-player" src="demo.mp3" controls autoplay ontimeupdate="updateTrackTime(this);">
 		Your browser does not support the audio element.
 	</audio>
-
-    <div id="wrapper">
-    <h1 style="margin: 2px" >Spectrum Analyzer</h1>
-    by <a href="http://0xfe.blogspot.com">0xfe</a>
-    <p/>
-    <div class="boxes">
-      <div id="canvasbox">
-        <canvas id="fftbox" width=500 height=100></canvas>
-        <canvas id="wavebox" width=500 height=100></canvas>
-      </div>
-    </div>
-    <p/>
-    <a href="#" id="play">Loading...</a>	
 </body>
 </html>

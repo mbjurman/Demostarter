@@ -27,8 +27,8 @@ SpectrumBox.prototype.init = function(
   this.num_bins = num_bins;
   this.num_points = num_points;
   this.canvas_id = canvas_id;
-  this.update_rate_ms = 50;
-  this.smoothing = 0.75;
+  this.update_rate_ms = 35;
+  this.smoothing = 2;
   this.type = type || SpectrumBox.Types.FREQUENCY;
 
   // Number of points we actually want to display. If zero, display all points.

@@ -13,23 +13,22 @@ define(
             me.wavebox.setType(SpectrumBox.Types.TIME);
             me.wavebox.getCanvasContext().fillStyle = "black";
 
-            me.audio = $(".audio-player");
-            me.audio.on("timeupdate", function() {
-                me.updateTrackTime(this);
-            });
-
-            window.addEventListener('load', function() {
-                me.play();
-            }, false); 
+            me.$audio = me.$el.find(".audio-player");
+            me.$timer = this.$el.find(".timer");
         }
 
         Demostarter.prototype.init = function() {
             var me = this;
 
-            return me;
-        };
+            me.$audio.on("timeupdate", function() {
+                me.updateTrackTime(this);
+            });
 
-        Demostarter.prototype.dispose = function() {
+            $(window).on("load", function() {
+                me.play();
+            });
+
+            return me;
         };
 
         Demostarter.prototype.formatSecondsAsTime = function(secs, format) {
@@ -48,31 +47,30 @@ define(
         }
 
         Demostarter.prototype.updateTrackTime = function(track) {
-            var currTimeDiv = this.$el.find(".timer");
-
             var currTime = Math.floor(track.currentTime).toString(); 
             var duration = Math.floor(track.duration).toString();
 
-            currTimeDiv.html(this.formatSecondsAsTime(duration-currTime));
+            this.$timer.html(this.formatSecondsAsTime(duration-currTime));
         }
 
         Demostarter.prototype.play = function() {
-            var me = this;
-            var audioSource = me.context.createMediaElementSource(me.audio.get(0));
-            audioSource.connect(me.context.destination);
+            var audioSource = this.context.createMediaElementSource(this.$audio.get(0));
+            audioSource.connect(this.context.destination);
 
-            var wavenode = me.wavebox.getAudioNode();
+            var wavenode = this.wavebox.getAudioNode();
             audioSource.connect(wavenode);
-            wavenode.connect(me.context.destination);
-            me.wavebox.enable();
+            wavenode.connect(this.context.destination);
+            this.wavebox.enable();
         }
 
         Demostarter.prototype.stop = function() {
-            var me = this;
-            me.wavebox.disable();
-            me.audio.getSource().disconnect();
+            this.wavebox.disable();
+            this.$audio.getSource().disconnect();
         }
 
+        Demostarter.prototype.dispose = function() {
+            this.$audio.off();
+        };
 
         function init() {
             return new Demostarter(this).init();

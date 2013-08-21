@@ -14,7 +14,8 @@
 
 	<link rel="shortcut icon" href="/favicon.ico">
 	<link href='http://fonts.googleapis.com/css?family=Aldrich|Marvel' rel='stylesheet' type='text/css'>
-	
+	<script data-main="require.config.loader" src="require-2.1.2-jquery-1.8.2.min.js"></script>
+
 	<style type="text/css">
 		body {
 			padding-top: 20px;
@@ -34,7 +35,7 @@
 			margin-bottom: 60px;
 		}
 
-		#timer {
+		.timer {
 			font-size: 100px;
 		}
 
@@ -49,84 +50,18 @@
 			width: 100%;
 			height: 100px;
 		}		
-	</style>
-
-	<script type="text/javascript">
-
-		var context;
-		var wavebox;
-		var audio;
-
-
-		function formatSecondsAsTime(secs, format) {
-			var hr  = Math.floor(secs / 3600);
-			var min = Math.floor((secs - (hr * 3600))/60);
-			var sec = Math.floor(secs - (hr * 3600) -  (min * 60));
-
-			if (min < 10) { 
-				min = "0" + min; 
-			}
-			if (sec < 10) { 
-				sec  = "0" + sec;
-			}
-
-			return min + ':' + sec;
-		}
-
-		function updateTrackTime(track){
-			var currTimeDiv = document.getElementById('timer');
-
-			var currTime = Math.floor(track.currentTime).toString(); 
-			var duration = Math.floor(track.duration).toString();
-
-			currTimeDiv.innerHTML = formatSecondsAsTime(duration-currTime);
-		}
-
-		function initialize() {
-			context = new webkitAudioContext();
-
-			wavebox = new SpectrumBox(2048, 1000, "wavebox", context);
-			wavebox.setType(SpectrumBox.Types.TIME);
-			wavebox.getCanvasContext().fillStyle = "black";
-		}
-
-		function play() {
-			var audio = document.getElementById('audio-player');
-			var audioSource = context.createMediaElementSource(audio);
-			audioSource.connect(context.destination);
-
-			var wavenode = wavebox.getAudioNode();
-			audioSource.connect(wavenode);
-			wavenode.connect(context.destination);
-			wavebox.enable();
-		}
-
-		function stop() {
-			wavebox.disable();
-			audio.getSource().disconnect();
-		}
-
-		function onLoad(e) {
-			play();
-		}
-
-		// Need window.onload to fire first. See crbug.com/112368.
-		window.addEventListener('load', onLoad, false);	
-
-		$(function() { initialize(); });
-
-  </script>
+	</style>	
 </head>
 
-<body>
+<body data-require="demostarter">
 	<p>Demo startar om</p>
-	<p id="timer"></p>
+	<p class="timer"></p>
 
 	<div id="canvasbox">
 		<canvas id="wavebox" width=500 height=200></canvas>
 	</div>
 
-	<audio id="audio-player" src="demo.mp3" controls autoplay ontimeupdate="updateTrackTime(this);">
+	<audio class="audio-player" src="demo.mp3" controls autoplay>
 		Your browser does not support the audio element.
 	</audio>
 </body>

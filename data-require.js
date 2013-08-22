@@ -1,8 +1,6 @@
 define(
     [
-        "jquery",
-        "metadata",
-        "pubsub"
+        "jquery"
     ],
     
     function ($) {
@@ -27,23 +25,7 @@ define(
             return typeof dataAttr !== 'undefined' && dataAttr !== false;
         }
         
-        function dispose(callback) {
-
-            var length = dataRequireModules.length;
-            
-            while (length--) {
-
-                if (dataRequireModules[length] !== undefined && dataRequireModules[length] !== null && typeof dataRequireModules[length].dispose === "function") {
-                    dataRequireModules[length].dispose();
-                }
-                
-                dataRequireModules.splice(length, 1);
-            }
-
-            callback();
-        }
-
-        function initRequiredModules(el, callback) {
+        function initRequiredModules(el) {
 
             var $el = $(el),
                 modulesToRequire = $el.attr("data-require"),
@@ -55,28 +37,6 @@ define(
                 for (i = 0; i < arguments.length; i++) {
                     dataRequireModules.push(arguments[i].init.apply(el));
                 }
-                
-                callback(el);
-            });
-        }
-
-        function initDataClickEvent($data) {
-            $data.on("click", "[data-click-event]", function (event) {
-                var $me = $(this);
-                var meta = $me.metadata();
-                if (meta.preventDefaultAction) {
-                    event.preventDefault();
-                }
-
-                $.publish($me.attr("data-click-event"), [$me.metadata()]);
-            });
-        }
-
-        function initDataFocusEvent($data) {
-            $data.on("submit", "[data-focus-event]", function () {
-
-                var $me = $(this);
-                $.publish($me.attr("data-focus-event"), [$me.metadata()]);
             });
         }
 
@@ -96,35 +56,32 @@ define(
             return elements;
         }
 
-        function initDataRequire($data, callback) {
-
+        function initDataRequire($data) {
             var elements = getElementsWithDataRequireAttribute($data);
-
-            if (elements.length === 0) {
-                callback();
-            }
 
             var i;
             for (i = 0; i < elements.length; i++) {
                 initRequiredModules(elements[i], function (e) {
                     elements.splice(elements.indexOf(e), 1);
-
-                    if (elements.length === 0) {
-                        callback();
-                    }
                 });
             }
         }
 
-        function init($data, callback) {
-            initDataRequire($data, function () {
-                initDataClickEvent($data);
-                initDataFocusEvent($data);
+        function init($data) {
+            initDataRequire($data);
+        }
 
-                if (callback !== undefined) {
-                    callback();
+        function dispose() {
+            var length = dataRequireModules.length;
+            
+            while (length--) {
+
+                if (dataRequireModules[length] !== undefined && dataRequireModules[length] !== null && typeof dataRequireModules[length].dispose === "function") {
+                    dataRequireModules[length].dispose();
                 }
-            });
+                
+                dataRequireModules.splice(length, 1);
+            }
         }
 
         return {

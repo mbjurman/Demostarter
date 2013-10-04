@@ -1,0 +1,38 @@
+body {
+	padding-top: 30px;
+	padding-bottom: 20px;
+	color: darkslateblue;
+	background-color: #90C0DE;
+	font-family: Arial; 
+	font-size: 60px; 
+	line-height: 80px; 
+	font-weight: bold;
+	text-align: center;
+	font-family: "Aldrich", cursive; 
+}
+
+p {
+	margin-top: 60px;
+	margin-bottom: 60px;
+}
+
+.timer {
+	font-size: 100px;
+}
+
+.timer.glow {
+	text-shadow: white 0px 0px 21px;
+	text-decoration: blink;	
+}
+
+#wavebox {
+	position: relative;
+	width: 500px;
+	height: 100px;
+}
+
+#canvasbox {
+	position: relative;
+	width: 100%;
+	height: 100px;
+}		

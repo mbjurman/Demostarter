@@ -49,8 +49,16 @@ define(
         Demostarter.prototype.updateTrackTime = function(track) {
             var currTime = Math.floor(track.currentTime).toString(); 
             var duration = Math.floor(track.duration).toString();
-
-            this.$timer.html(this.formatSecondsAsTime(duration-currTime));
+            var remaining = duration-currTime;
+            
+            if (remaining < 12) {
+                this.$timer.addClass("glow");
+            } 
+            else {
+                this.$timer.removeClass("glow");
+            }
+            
+            this.$timer.html(this.formatSecondsAsTime(remaining));
         }
 
         Demostarter.prototype.play = function() {
